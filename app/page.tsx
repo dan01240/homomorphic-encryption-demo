@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -20,6 +20,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import * as paillier from "paillier-bigint";
 
 // カスタムテーマの作成
 const theme = createTheme({
@@ -78,41 +79,65 @@ const AnimatedCard = styled(Card)(({}) => ({
   },
 }));
 
-// 暗号化のシミュレーション関数（変更なし）
-const simulateEncrypt = (value: number, publicKey: string) => {
-  return btoa(`${value}:${publicKey}`);
+// Paillier暗号の公開鍵と秘密鍵の生成
+const generateKeys = async () => {
+  const { publicKey, privateKey } = await paillier.generateRandomKeys(2048);
+  return { publicKey, privateKey };
 };
 
-const simulateDecrypt = (encrypted: string) => {
-  const [value] = atob(encrypted).split(":");
-  return parseInt(value, 10);
+// 暗号化の実装
+const encryptNumber = (value: number, publicKey: any) => {
+  return publicKey.encrypt(BigInt(value));
 };
 
-const simulateHomomorphicAddition = (enc1: string, enc2: string) => {
-  const value1 = simulateDecrypt(enc1);
-  const value2 = simulateDecrypt(enc2);
-  return simulateEncrypt(value1 + value2, "public_key");
+// 復号化の実装
+const decryptNumber = (encrypted: bigint, privateKey: any) => {
+  return privateKey.decrypt(encrypted).toString();
+};
+
+// ホモモルフィック加算の実装
+const homomorphicAddition = (enc1: bigint, enc2: bigint, publicKey: any) => {
+  return publicKey.addition(enc1, enc2);
 };
 
 export default function HomomorphicEncryptionDemo() {
-  const [publicKey] = useState("demo_public_key");
-  const [privateKey] = useState("demo_private_key");
+  const [publicKey, setPublicKey] = useState<any>(null);
+  const [privateKey, setPrivateKey] = useState<any>(null);
   const [number1, setNumber1] = useState(0);
   const [number2, setNumber2] = useState(0);
-  const [encryptedNumber1, setEncryptedNumber1] = useState("");
-  const [encryptedNumber2, setEncryptedNumber2] = useState("");
-  const [encryptedSum, setEncryptedSum] = useState("");
-  const [decryptedSum, setDecryptedSum] = useState(0);
+  const [encryptedNumber1, setEncryptedNumber1] = useState<bigint | null>(null);
+  const [encryptedNumber2, setEncryptedNumber2] = useState<bigint | null>(null);
+  const [encryptedSum, setEncryptedSum] = useState<bigint | null>(null);
+  const [decryptedSum, setDecryptedSum] = useState("");
 
-  const handleEncrypt = () => {
-    const enc1 = simulateEncrypt(number1, publicKey);
-    const enc2 = simulateEncrypt(number2, publicKey);
+  // 初回レンダー時に鍵を生成
+  useEffect(() => {
+    generateKeys().then(({ publicKey, privateKey }) => {
+      console.log({ publicKey });
+      setPublicKey(publicKey);
+      setPrivateKey(privateKey);
+    });
+  }, []);
+
+  const handleEncrypt = async () => {
+    if (!publicKey || !privateKey) return;
+
+    const enc1 = encryptNumber(number1, publicKey);
+    const enc2 = encryptNumber(number2, publicKey);
     setEncryptedNumber1(enc1);
     setEncryptedNumber2(enc2);
-    const encSum = simulateHomomorphicAddition(enc1, enc2);
+
+    const encSum = homomorphicAddition(enc1, enc2, publicKey);
     setEncryptedSum(encSum);
-    setDecryptedSum(simulateDecrypt(encSum));
+
+    const decSum = decryptNumber(encSum, privateKey);
+    setDecryptedSum(decSum);
   };
+
+  // 鍵がまだ生成されていない場合の対処
+  if (!publicKey || !privateKey) {
+    return <div>Loading...</div>; // 鍵が生成されるまでロード状態を表示
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -130,30 +155,6 @@ export default function HomomorphicEncryptionDemo() {
               Homomorphic Encryption Demo
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Public Key"
-                  value={publicKey}
-                  fullWidth
-                  variant="outlined"
-                  margin="normal"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Private Key"
-                  value={privateKey}
-                  fullWidth
-                  variant="outlined"
-                  margin="normal"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-              </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Number 1"
@@ -191,7 +192,7 @@ export default function HomomorphicEncryptionDemo() {
               <Grid item xs={12}>
                 <TextField
                   label="Encrypted Number 1"
-                  value={encryptedNumber1}
+                  value={encryptedNumber1?.toString() || ""}
                   fullWidth
                   variant="outlined"
                   margin="normal"
@@ -204,7 +205,7 @@ export default function HomomorphicEncryptionDemo() {
               <Grid item xs={12}>
                 <TextField
                   label="Encrypted Number 2"
-                  value={encryptedNumber2}
+                  value={encryptedNumber2?.toString() || ""}
                   fullWidth
                   variant="outlined"
                   margin="normal"
@@ -217,7 +218,7 @@ export default function HomomorphicEncryptionDemo() {
               <Grid item xs={12}>
                 <TextField
                   label="Encrypted Sum"
-                  value={encryptedSum}
+                  value={encryptedSum?.toString() || ""}
                   fullWidth
                   variant="outlined"
                   margin="normal"
