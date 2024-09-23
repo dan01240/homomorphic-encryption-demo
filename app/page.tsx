@@ -70,7 +70,7 @@ const GradientBackground = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
-const AnimatedCard = styled(Card)(({ theme }) => ({
+const AnimatedCard = styled(Card)(({}) => ({
   transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
   "&:hover": {
     transform: "translateY(-5px)",
@@ -95,8 +95,8 @@ const simulateHomomorphicAddition = (enc1: string, enc2: string) => {
 };
 
 export default function HomomorphicEncryptionDemo() {
-  const [publicKey, setPublicKey] = useState("demo_public_key");
-  const [privateKey, setPrivateKey] = useState("demo_private_key");
+  const [publicKey] = useState("demo_public_key");
+  const [privateKey] = useState("demo_private_key");
   const [number1, setNumber1] = useState(0);
   const [number2, setNumber2] = useState(0);
   const [encryptedNumber1, setEncryptedNumber1] = useState("");
