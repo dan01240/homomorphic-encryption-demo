@@ -91,7 +91,6 @@ npm install
 Start the project on your local server:
 
 ```bash
-Copy code
 npm run dev
 ```
 
