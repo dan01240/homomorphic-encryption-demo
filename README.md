@@ -58,16 +58,6 @@ This demo demonstrates the additive homomorphism property of Paillier encryption
    };
    ```
 
-5. **Generate Public and Private Keys**  
-   We generate a public-private key pair for encryption and decryption using the following code:
-
-   ```typescript
-   const generateKeys = async () => {
-     const { publicKey, privateKey } = await paillier.generateRandomKeys(2048);
-     return { publicKey, privateKey };
-   };
-   ```
-
 ## Try the Demo
 
 You can explore the **Homomorphic Encryption Demo** live and interact with the encryption process yourself. This demo showcases how you can securely perform addition on encrypted numbers using the **paillier-bigint** library.
