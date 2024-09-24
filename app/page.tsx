@@ -23,7 +23,6 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import * as paillier from "paillier-bigint";
 
-// カスタムテーマの作成
 const theme = createTheme({
   palette: {
     primary: {
@@ -62,7 +61,6 @@ const theme = createTheme({
   },
 });
 
-// スタイル付きコンポーネントの作成
 const GradientBackground = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
   display: "flex",
@@ -80,23 +78,20 @@ const AnimatedCard = styled(Card)(({}) => ({
   },
 }));
 
-// Paillier暗号の公開鍵と秘密鍵の生成
+// PaillierCrypt:generate publicKey and privateKey
 const generateKeys = async () => {
   const { publicKey, privateKey } = await paillier.generateRandomKeys(2048);
   return { publicKey, privateKey };
 };
 
-// 暗号化の実装
 const encryptNumber = (value: number, publicKey: any) => {
   return publicKey.encrypt(BigInt(value));
 };
 
-// 復号化の実装
 const decryptNumber = (encrypted: bigint, privateKey: any) => {
   return privateKey.decrypt(encrypted).toString();
 };
 
-// ホモモルフィック加算の実装
 const homomorphicAddition = (enc1: bigint, enc2: bigint, publicKey: any) => {
   return publicKey.addition(enc1, enc2);
 };
@@ -111,7 +106,6 @@ export default function HomomorphicEncryptionDemo() {
   const [encryptedSum, setEncryptedSum] = useState<bigint | null>(null);
   const [decryptedSum, setDecryptedSum] = useState("");
 
-  // 初回レンダー時に鍵を生成
   useEffect(() => {
     generateKeys().then(({ publicKey, privateKey }) => {
       console.log({ publicKey });
@@ -135,9 +129,8 @@ export default function HomomorphicEncryptionDemo() {
     setDecryptedSum(decSum);
   };
 
-  // 鍵がまだ生成されていない場合の対処
   if (!publicKey || !privateKey) {
-    return <div>Loading...</div>; // 鍵が生成されるまでロード状態を表示
+    return <div>Loading...</div>; // display Loading until generating key
   }
 
   return (
@@ -252,7 +245,7 @@ export default function HomomorphicEncryptionDemo() {
             </Typography>
             <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
               <Link
-                href="https://medium.com/privacy-preserving-natural-language-processing/homomorphic-encryption-for-beginners-a-practical-guide-part-1-b8f26d03a98a"
+                href="https://medium.com/@daiki01240/homomorphic-encryption-how-it-enables-secure-computation-on-encrypted-data-fcde02531c19"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
