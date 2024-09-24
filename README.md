@@ -65,7 +65,7 @@ You can explore the **Homomorphic Encryption Demo** live and interact with the e
 ### Live Demo
 
 Click [here](https://homomorphic-encryption-demo-git-main-dan01240s-projects.vercel.app/) to try the demo live and experience homomorphic encryption in action.
-![Alt text for the image](https://github.com/user-attachments/assets/1c483f6b-3625-4a84-9e61-9f0ca347abc1)
+![Alt text for the image](https://github.com/user-attachments/assets/cd37a59d-dddf-4c52-bed3-745ef6c1384b)
 
 ### Running the Demo Locally
 
