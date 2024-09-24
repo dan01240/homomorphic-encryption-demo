@@ -74,7 +74,7 @@ If you'd prefer to run the demo on your local machine, follow these steps:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/homomorphic-encryption-demo.git
+git clone https://github.com/dan01240/homomorphic-encryption-demo.git
 ```
 
 ### 2. Install Dependencies
